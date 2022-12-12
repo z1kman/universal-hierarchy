@@ -1,0 +1,39 @@
+@import '../../constants/scss/variables.scss';
+
+.Item {
+  background-color: $elementBgColorPrimary;
+  padding: 5px 10px;
+  cursor: grabbing;
+  margin: 5px 0;
+}
+
+.Item__Header {
+    display: flex;
+    align-items: center;
+}
+
+.Item__Icon {
+  height: 15px;
+  stroke: $textColorPrimary;
+  transform: rotate(90deg);
+  width: 15px;
+
+  &_hidden {
+    display: none;
+  }
+
+  &_open {
+    transform: rotate(45deg);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.Item__Label {
+    color: $textColorPrimary;
+    font-size: $fontSizeM;
+    padding-left: 10px;
+}
