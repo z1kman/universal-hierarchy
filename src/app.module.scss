@@ -1,7 +1,17 @@
+@import './constants/scss/variables.scss';
+
+.App {
+  background-color: $elementBgColorSecondary;
+  height: 100%;
+}
+
 .App__FirstBlock {
   height: 100px;
   width: 100%;
   background-color: beige;
+  box-sizing: border-box;
+
+  border: 5px dashed gray;
 }
 
 .App__SecondBlock {

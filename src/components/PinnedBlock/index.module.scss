@@ -1,0 +1,21 @@
+@import '../../constants/scss/variables.scss';
+
+.PinnedBlock {
+  height: 100px;
+  width: 100%;
+  box-sizing: border-box;
+
+  &_noContent {
+    border: 5px dashed gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.PinnedBlock__Label {
+  font-weight: 700;
+  color: $textColorPrimary;
+  font-size: $fontSizeL;
+  opacity: 0.8;
+}

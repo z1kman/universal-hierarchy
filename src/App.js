@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import style from './app.module.scss'
+
+// Components
 import { Item } from './components/Item'
+import { PinnedBlock } from './components/PinnedBlock'
+
+// Containers
 import { DraggableWrapper } from './containers/DraggableWrapper'
 
 const ITEMS = [
@@ -72,12 +77,26 @@ function App() {
   }
 
   const callbackOnDropSecondBlock = (e) => {
-    createElement(
-      draggableElement.index,
-      firstBlock,
-      secondBlock,
-      setSecondBlock
-    )
+    if (targetElement) {
+      createElement(
+        draggableElement.index,
+        targetElement.index,
+        firstBlock,
+        secondBlock,
+        setSecondBlock,
+        draggableElement.direction
+      )
+    } else {
+      createElement(
+        draggableElement.index,
+        0,
+        firstBlock,
+        secondBlock,
+        setSecondBlock,
+        draggableElement.direction
+      )
+    }
+
     deleteElement(draggableElement.index, firstBlock, setFirstBlock)
     setDraggableElement(null)
   }
@@ -141,7 +160,7 @@ function App() {
         draggableElement={draggableElement}
         callbackOnDrop={callbackOnDropFirstBlock}
       >
-        <div className={style.App__FirstBlock}>
+        <PinnedBlock>
           {firstBlock.map((item, index) => (
             <Item
               label={item.label}
@@ -149,7 +168,7 @@ function App() {
               onDragStart={(e) => handleOnDragStart(e, index, '1')}
             />
           ))}
-        </div>
+        </PinnedBlock>
       </DraggableWrapper>
       <DraggableWrapper
         draggableElement={draggableElement}
