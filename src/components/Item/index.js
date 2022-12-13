@@ -7,9 +7,7 @@ import PropType from 'prop-types'
 import chevronSvg from '../../svg/chevron.svg'
 
 export function Item(props) {
-  const { children, open, label, onDragStart, onDragOver } = props
-
-  const isHasChildren = Boolean(children?.length > 0)
+  const { isHasChildren, open, label, onClick, onDragStart, onDragOver } = props
 
   return (
     <div
@@ -20,6 +18,7 @@ export function Item(props) {
     >
       <div className={styles.Item__Header}>
         <div
+          onClick={onClick}
           className={cn(styles.Item__Icon, {
             [styles.Item__Icon_hidden]: !isHasChildren,
             [styles.Item__Icon_open]: open,
@@ -36,7 +35,8 @@ export function Item(props) {
 Item.propTypes = {
   open: PropType.bool,
   label: PropType.string,
-  children: PropType.node,
+  isHasChildren: PropType.bool,
+  onClick: PropType.func,
   onDragStart: PropType.func,
   onDragOver: PropType.func,
 }

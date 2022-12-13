@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import style from './app.module.scss'
 
 // Components
@@ -6,186 +6,192 @@ import { Item } from './components/Item'
 import { PinnedBlock } from './components/PinnedBlock'
 
 // Containers
+import { ItemContainer } from './containers/Item/'
 import { DraggableWrapper } from './containers/DraggableWrapper'
 
+// Handlers
+import { getAccumData } from './handlers/getAccumData'
+import { createUniqElements } from './handlers/createUniqElements'
+import { getDirection } from './handlers/getDirection'
+import { getCoordElement } from './handlers/getCoordElement'
+import { getLinkParentElement } from './handlers/getLinkParentElement'
+
+const BLOCKS = {
+  PINNED_ITEMS: 'pinned_items',
+  OTHER_ITEMS: 'other_items',
+}
+
 const ITEMS = [
+  { name: BLOCKS.PINNED_ITEMS, child: [] },
   {
-    label: 'item1',
+    name: BLOCKS.OTHER_ITEMS,
+    child: [
+      {
+        label: 'item1',
+        child: [
+          { label: 'item3' },
+          { label: 'item4', child: [{ label: 'item5' }] },
+        ],
+      },
+      { label: 'item2' },
+    ],
   },
-  { label: 'item2' },
 ]
 
 function App() {
-  const [firstBlock, setFirstBlock] = useState([])
-  const [secondBlock, setSecondBlock] = useState([...ITEMS])
+  const [items, setItems] = useState([...ITEMS])
+  const [accumulateData, setAccumulateData] = useState([])
   const [draggableElement, setDraggableElement] = useState(null)
   const [targetElement, setTargetElement] = useState(null)
   const [currentDirection, setCurrentDirection] = useState(1)
 
-  function deleteElement(index, itemsTargetElement, setState) {
-    const newState = [...itemsTargetElement]
-    newState.splice(index, 1)
-    setState(newState)
-  }
+  function deleteElement(items) {
+    const { newItems, link, index } = getLinkParentElement(
+      draggableElement.elementObj,
+      items
+    )
+    link.child.splice(index, 0)
 
-  function createElement(
-    indexDragElement,
-    indexTargetElement = 0,
-    senderItems,
-    recipientItems,
-    setStateRecipinet,
-    direction = 1
-  ) {
-    const newState = [...recipientItems]
-    console.log('dasdsa', direction)
-    if (direction === 1) {
-      newState.splice(indexTargetElement + 1, 0, senderItems[indexDragElement])
-    } else if (direction === -1) {
-      newState.splice(indexTargetElement, 0, senderItems[indexDragElement])
-    }
-
-    setStateRecipinet(newState)
+    console.log('index',index, link)
+    return newItems
   }
 
   useEffect(() => {
-    console.log(currentDirection)
-  }, [currentDirection])
-  const callbackOnDropFirstBlock = (e) => {
-    if (targetElement) {
-      createElement(
-        draggableElement.index,
-        targetElement.index,
-        secondBlock,
-        firstBlock,
-        setFirstBlock,
-        draggableElement.direction
-      )
-    } else {
-      createElement(
-        draggableElement.index,
-        0,
-        secondBlock,
-        firstBlock,
-        setFirstBlock,
-        draggableElement.direction
-      )
+    if (items) {
+      const itemsWithId = createUniqElements(items)
+      const accumData = getAccumData(itemsWithId)
+
+      setItems([...itemsWithId])
+      setAccumulateData([...accumData])
     }
+  }, [])
 
-    deleteElement(draggableElement.index, secondBlock, setSecondBlock)
-    setDraggableElement(null)
-    setCurrentDirection(1)
-  }
+  const createElement = ({
+    draggableElement,
+    targetElement,
+    allItems,
+    direction = 1,
+  }) => {
+    let newState = [...allItems]
+    const positive = 1
+    const negative = -1
+    const neutral = 0
 
-  const callbackOnDropSecondBlock = (e) => {
-    if (targetElement) {
-      createElement(
-        draggableElement.index,
-        targetElement.index,
-        firstBlock,
-        secondBlock,
-        setSecondBlock,
-        draggableElement.direction
-      )
+    if (!targetElement) {
+      newState[0].child.push({ ...draggableElement.elementObj })
     } else {
-      createElement(
-        draggableElement.index,
-        0,
-        firstBlock,
-        secondBlock,
-        setSecondBlock,
-        draggableElement.direction
+      const { newItems, link, index } = getLinkParentElement(
+        targetElement.elementObj,
+        items
       )
+
+      if (direction === positive) {
+        link.child.splice(index + 1, 0, { ...draggableElement.elementObj })
+        newState = [...newItems]
+      } else if (direction === negative) {
+        link.child.splice(index, 0, { ...draggableElement.elementObj })
+        newState = [...newItems]
+      }
     }
-
-    deleteElement(draggableElement.index, firstBlock, setFirstBlock)
-    setDraggableElement(null)
+    newState = [...createUniqElements(newState)]
+    return newState
   }
 
-  const handleOnDragStart = (e, index, block) => {
-    setDraggableElement({ element: e.target, index: index, block: block })
+  function getBaseParentId(item) {
+    if (item.path) {
+      return item.path[0]
+    } else {
+      return -1
+    }
   }
 
-  const handleDragOver = (e, index, block) => {
-    if (block !== draggableElement.block) {
+  const callbackOnDrop = useCallback(() => {
+    let newItems = createElement({
+      draggableElement: draggableElement,
+      targetElement: targetElement,
+      allItems: items,
+      direction: draggableElement.direction,
+    })
+    newItems = deleteElement(newItems)
+
+    setItems(newItems)
+  }, [draggableElement, targetElement, items, setItems])
+
+  const handleOnDragStart = (e, item) => {
+    const parentBaseId = getBaseParentId(item)
+    setDraggableElement({
+      element: e.target,
+      elementObj: item,
+      parentBaseId: parentBaseId,
+    })
+  }
+
+  const handleDragOverItem = (e, item) => {
+    const targetParentBaseId = getBaseParentId(item)
+
+    if (
+      item.id !== draggableElement.elementObj.id &&
+      targetParentBaseId !== draggableElement.parentBaseId
+    ) {
       const targetEl = getCoordElement(e.target)
       const eventPos = e.clientY
       const direction = getDirection(targetEl, eventPos)
+
       setDraggableElement((prevState) => ({
         ...prevState,
         direction: direction,
       }))
       setTargetElement({
         element: e.target,
-        index: index,
-        block: block,
-        direction: direction,
+        elementObj: item,
+        parentBaseId: targetParentBaseId,
       })
     } else {
       setTargetElement(null)
     }
   }
 
-  const getCoordElement = (element) => {
-    const coordinateElement = element.getBoundingClientRect()
-    const startPositionElement = coordinateElement.y
-    const endPositionElement = coordinateElement.height + coordinateElement.y
-    const heightOfElement = coordinateElement.height
-    const midOfLemenet = startPositionElement + heightOfElement / 2
-    const centralAreaCoverage = heightOfElement / 3
-    const centerZoneFrom = midOfLemenet - centralAreaCoverage
-    const centerZoneTo = midOfLemenet + centralAreaCoverage
-
-    return {
-      start: startPositionElement,
-      end: endPositionElement,
-      height: heightOfElement,
-      centerZoneFrom: centerZoneFrom,
-      centerZoneTo: centerZoneTo,
-    }
-  }
-
-  const getDirection = (targetEl, eventPos) => {
-    if (eventPos < targetEl.centerZoneFrom) {
-      return -1
-    } else if (eventPos > targetEl.centerZoneTo) {
-      return 1
-    } else {
-      return 0
-    }
-  }
-
   return (
     <div className={style.App}>
       <DraggableWrapper
+        name={BLOCKS.PINNED_ITEMS}
         draggableElement={draggableElement}
-        callbackOnDrop={callbackOnDropFirstBlock}
+        callbackOnDrop={callbackOnDrop}
       >
         <PinnedBlock>
-          {firstBlock.map((item, index) => (
-            <Item
-              label={item.label}
-              onDragOver={(e) => handleDragOver(e, index, '1')}
-              onDragStart={(e) => handleOnDragStart(e, index, '1')}
-            />
-          ))}
+          {items[0].child.map((item, index) =>
+            renderRecursive(item, handleDragOverItem, handleOnDragStart)
+          )}
         </PinnedBlock>
       </DraggableWrapper>
       <DraggableWrapper
+        name={BLOCKS.OTHER_ITEMS}
         draggableElement={draggableElement}
-        callbackOnDrop={callbackOnDropSecondBlock}
+        callbackOnDrop={callbackOnDrop}
       >
         <div className={style.App__SecondBlock}>
-          {secondBlock.map((item, index) => (
-            <Item
-              label={item.label}
-              onDragOver={(e) => handleDragOver(e, index, '2')}
-              onDragStart={(e) => handleOnDragStart(e, index, '2')}
-            />
-          ))}
+          {items[1].child.map((item, index) =>
+            renderRecursive(item, handleDragOverItem, handleOnDragStart)
+          )}
         </div>
       </DraggableWrapper>
     </div>
   )
 }
 
+const renderRecursive = (item, handleDragOverItem, handleOnDragStart) => {
+  return (
+    <ItemContainer
+      label={item.label}
+      onDragOver={(e) => handleDragOverItem(e, item)}
+      onDragStart={(e) => handleOnDragStart(e, item)}
+    >
+      {item.child &&
+        item.child.length > 0 &&
+        item.child.map((subItem) =>
+          renderRecursive(subItem, handleDragOverItem, handleOnDragStart)
+        )}
+    </ItemContainer>
+  )
+}
 export default App

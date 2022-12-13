@@ -5,18 +5,10 @@
   height: 100%;
 }
 
-.App__FirstBlock {
-  height: 100px;
-  width: 100%;
-  background-color: beige;
-  box-sizing: border-box;
-
-  border: 5px dashed gray;
-}
 
 .App__SecondBlock {
   height: auto;
+  border-top: 10px solid $colorWhite;
   min-height: 100px;
   width: 100%;
-  background-color: gray;
 }
