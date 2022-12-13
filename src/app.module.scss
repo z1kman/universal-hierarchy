@@ -3,12 +3,14 @@
 .App {
   background-color: $elementBgColorSecondary;
   height: 100%;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 
 .App__SecondBlock {
-  height: auto;
+  min-width: 100px;
+  height: 100%;
   border-top: 10px solid $colorWhite;
-  min-height: 100px;
   width: 100%;
 }
