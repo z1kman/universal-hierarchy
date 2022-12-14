@@ -1,6 +1,6 @@
 @import '../../constants/scss/variables.scss';
 
-.App {
+.TwoHierarchy {
   background-color: $elementBgColorSecondary;
   height: 100%;
   flex-direction: column;
@@ -8,10 +8,6 @@
 }
 
 
-.App__SecondBlock {
-  min-width: 100px;
-  padding-top: 10px;
-  height: 100%;
+.TwoHierarchy__Block {
   border-top: 10px solid $colorWhite;
-  width: 100%;
 }

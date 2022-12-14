@@ -1,16 +1,16 @@
 // import documentation from "./documentation.mdx";
 
-import { Item } from './index'
+import { Block } from './index'
 
 export default {
-  title: 'Item',
-  component: Item,
+  title: 'Block',
+  component: Block,
   parameters: {
   },
-  args: { ...Item.defaultProps },
+  args: { ...Block.defaultProps },
 }
 
-const Template = (args) => <Item {...args} />
+const Template = (args) => <Block {...args} />
 
 export const Default = Template.bind({})
 Default.args = {}

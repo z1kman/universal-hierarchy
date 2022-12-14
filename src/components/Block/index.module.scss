@@ -1,6 +1,6 @@
 @import '../../constants/scss/variables.scss';
 
-.PinnedBlock {
+.Block {
   height: auto;
   width: 100%;
   box-sizing: border-box;
@@ -14,7 +14,7 @@
   }
 }
 
-.PinnedBlock__Label {
+.Block__Label {
   font-weight: 700;
   color: $textColorPrimary;
   font-size: $fontSizeL;

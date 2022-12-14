@@ -20,7 +20,7 @@ const ITEMS = [
           { label: 'item4', child: [{ label: 'item5' }] },
         ],
       },
-      { label: 'item2' },
+      { label: 'item2' },     
     ],
   },
 ]

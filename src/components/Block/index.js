@@ -4,25 +4,25 @@ import styles from './index.module.scss'
 import cn from 'classnames'
 import PropType from 'prop-types'
 
-export function PinnedBlock(props) {
+export function Block(props) {
   const { children } = props
 
   const isHasChildren = Boolean(children?.length > 0)
 
   return (
     <div
-      className={cn(styles.PinnedBlock, {
-        [styles.PinnedBlock_noContent]: !isHasChildren,
+      className={cn(styles.Block, {
+        [styles.Block_noContent]: !isHasChildren,
       })}
     >
       {!isHasChildren && (
-        <div className={styles.PinnedBlock__Label}>Drag here to pin</div>
+        <div className={styles.Block__Label}>Drag something here</div>
       )}
       {children}
     </div>
   )
 }
 
-PinnedBlock.propTypes = {
+Block.propTypes = {
   children: PropType.node,
 }

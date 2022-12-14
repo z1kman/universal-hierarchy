@@ -3,7 +3,7 @@ import style from './index.module.scss'
 import PropTypes from 'prop-types'
 
 // Components
-import { PinnedBlock } from '../../components/PinnedBlock'
+import { Block } from '../../components/Block'
 
 // Containers
 import { ItemContainer } from '../Item/'
@@ -97,37 +97,41 @@ export function TwoHierarhy(props) {
   }
 
   return (
-    <div className={style.App}>
+    <div className={style.TwoHierarchy}>
       <DraggableWrapper
         draggableElement={draggableElement}
         callbackOnDrop={(event) => callbackOnDrop(event, 0)}
         handleDragOver={handleDragOverPanel}
       >
-        <PinnedBlock>
-          {items[0]?.child && items[0].child.map((item, index) =>
-            renderRecursive(
-              item,
-              item.id,
-              handleDragOverItem,
-              handleOnDragStart
-            )
-          )}
-        </PinnedBlock>
+        <Block>
+          {items[0]?.child &&
+            items[0].child.map((item, index) =>
+              renderRecursive(
+                item,
+                item.id,
+                handleDragOverItem,
+                handleOnDragStart
+              )
+            )}
+        </Block>
       </DraggableWrapper>
       <DraggableWrapper
         draggableElement={draggableElement}
         callbackOnDrop={(event) => callbackOnDrop(event, 1)}
         handleDragOver={handleDragOverPanel}
       >
-        <div className={style.App__SecondBlock}>
-          {items[1]?.child  && items[1].child.map((item, index) =>
-            renderRecursive(
-              item,
-              item.id,
-              handleDragOverItem,
-              handleOnDragStart
-            )
-          )}
+        <div className={style.TwoHierarchy__Block}>
+          <Block>
+            {items[1]?.child &&
+              items[1].child.map((item, index) =>
+                renderRecursive(
+                  item,
+                  item.id,
+                  handleDragOverItem,
+                  handleOnDragStart
+                )
+              )}
+          </Block>
         </div>
       </DraggableWrapper>
     </div>
@@ -135,5 +139,5 @@ export function TwoHierarhy(props) {
 }
 
 TwoHierarhy.propTypes = {
-    data: PropTypes.array
+  data: PropTypes.array,
 }
