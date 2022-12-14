@@ -12,30 +12,36 @@ export const createElement = ({
   const positive = 1
   const negative = -1
 
-  
-  if (!targetElement || targetPanelIndex !== Number(targetElement?.parentBaseId)) {
-    newState[targetPanelIndex].child.push({ ...draggableElement.elementObj })
+  if (
+    !targetElement ||
+    targetPanelIndex !== Number(targetElement?.parentBaseId)
+  ) {
+    if (newState[targetPanelIndex].child) {
+      newState[targetPanelIndex].child.push({ ...draggableElement.elementObj })
+    } else {
+      newState[targetPanelIndex].child = [{ ...draggableElement.elementObj }]
+    }
   } else {
-    const { newItems, link, index } = getLinkParentElement(
+    const { newItems, link } = getLinkParentElement(
       { ...targetElement.elementObj },
       allItems
     )
     const indexTargetEl = targetElement.elementObj.index
-    const contentTargetEl = link.child[indexTargetEl]
+    const contentTargetEl = link.child
 
-    console.log(contentTargetEl)
     if (direction === positive) {
-      link.child.splice(index + 1, 0, { ...draggableElement.elementObj })
+      contentTargetEl.splice(indexTargetEl + 1, 0, {
+        ...draggableElement.elementObj,
+      })
       newState = [...newItems]
     } else if (direction === negative) {
-      link.child.splice(index + 2, 0, { ...link.child[index] })
-      link.child[index] = { ...draggableElement.elementObj }
-      
+      contentTargetEl.splice(indexTargetEl, 0, {
+        ...draggableElement.elementObj,
+      })
+
       newState = [...newItems]
     } else {
-      const indexTargetEl = targetElement.elementObj.index
       const contentTargetEl = link.child[indexTargetEl]
-
       if (contentTargetEl.child) {
         contentTargetEl.child.push({ ...draggableElement.elementObj })
       } else {
