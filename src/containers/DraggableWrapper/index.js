@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback } from 'react'
+import styles from './index.module.scss'
 
 export function DraggableWrapper(props) {
   const { children, callbackOnDrop, draggableElement } = props
@@ -29,5 +30,9 @@ export function DraggableWrapper(props) {
     }
   }, [draggableElement, onDrop])
 
-  return <div ref={ref}>{children}</div>
+  return (
+    <div className={styles.DraggableWrapper} ref={ref}>
+      {children}
+    </div>
+  )
 }

@@ -38,17 +38,23 @@ const ITEMS = [
   },
 ]
 
-const renderRecursive = (item, handleDragOverItem, handleOnDragStart) => {
+const renderRecursive = (item, key, handleDragOverItem, handleOnDragStart) => {
   return (
     <ItemContainer
+      key={key}
       label={item.label}
       onDragOver={(e) => handleDragOverItem(e, item)}
       onDragStart={(e) => handleOnDragStart(e, item)}
     >
       {item.child &&
         item.child.length > 0 &&
-        item.child.map((subItem) =>
-          renderRecursive(subItem, handleDragOverItem, handleOnDragStart)
+        item.child.map((subItem, subIndex) =>
+          renderRecursive(
+            subItem,
+            subItem.id,
+            handleDragOverItem,
+            handleOnDragStart
+          )
         )}
     </ItemContainer>
   )
@@ -59,20 +65,18 @@ function App() {
   const [draggableElement, setDraggableElement] = useState(null)
   const [targetElement, setTargetElement] = useState(null)
 
-  const callbackOnDrop = useCallback(
-    (event, indexPanel) => {
-      let newItems = createElement({
-        draggableElement: draggableElement,
-        targetElement: targetElement,
-        targetPanelIndex: indexPanel,
-        allItems: items,
-        direction: draggableElement.direction,
-      })
-      newItems = deleteElement(newItems, draggableElement)
-      setItems([...createUniqElements(newItems)])
-    },
-    [draggableElement, targetElement, items, setItems]
-  )
+  const callbackOnDrop = (event, indexPanel) => {
+    let newItems = createElement({
+      draggableElement: draggableElement,
+      targetElement: targetElement,
+      targetPanelIndex: indexPanel,
+      allItems: items,
+      direction: draggableElement.direction,
+    })
+    newItems = deleteElement(newItems, draggableElement)
+    console.log(newItems)
+    setItems([...createUniqElements(newItems)])
+  }
 
   const handleOnDragStart = (e, item) => {
     const parentBaseId = getBaseParentId(item)
@@ -113,7 +117,12 @@ function App() {
       >
         <PinnedBlock>
           {items[0].child.map((item, index) =>
-            renderRecursive(item, handleDragOverItem, handleOnDragStart)
+            renderRecursive(
+              item,
+              item.id,
+              handleDragOverItem,
+              handleOnDragStart
+            )
           )}
         </PinnedBlock>
       </DraggableWrapper>
@@ -124,7 +133,12 @@ function App() {
       >
         <div className={style.App__SecondBlock}>
           {items[1].child.map((item, index) =>
-            renderRecursive(item, handleDragOverItem, handleOnDragStart)
+            renderRecursive(
+              item,
+              item.id,
+              handleDragOverItem,
+              handleOnDragStart
+            )
           )}
         </div>
       </DraggableWrapper>
