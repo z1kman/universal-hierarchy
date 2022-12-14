@@ -5,12 +5,11 @@
   padding: 5px 10px;
   cursor: grabbing;
   margin: 5px 0;
-
 }
 
 .Item__Header {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .Item__Icon {
@@ -18,6 +17,10 @@
   stroke: $textColorPrimary;
   transform: rotate(90deg);
   width: 15px;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 
   &_hidden {
     display: none;
@@ -34,7 +37,7 @@
 }
 
 .Item__Label {
-    color: $textColorPrimary;
-    font-size: $fontSizeM;
-    padding-left: 10px;
+  color: $textColorPrimary;
+  font-size: $fontSizeM;
+  padding-left: 10px;
 }
